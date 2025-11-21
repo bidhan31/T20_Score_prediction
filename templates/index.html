@@ -2,127 +2,101 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cricket Score Predictor</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <title>T20 Score Prediction</title>
     <style>
         body {
-            padding-top: 50px;
+            font-family: Arial, sans-serif;
+            background: #f4f4f9;
+            margin: 0;
+            padding: 0;
         }
         .container {
-            max-width: 1200px;
+            width: 500px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px #ccc;
         }
         h1 {
-            margin-bottom: 30px;
+            text-align: center;
+            color: #333;
         }
-        .team-image {
-            width: 100px;
-            height: 100px;
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        select, input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .prediction {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            color: #007bff;
         }
     </style>
 </head>
 <body>
-    <div class="container text-center">
-        <div class="row">
-            <!-- Batting Team Image -->
-            <div class="col-md-2 d-flex align-items-center justify-content-center">
-                <img id="batting_team_image" class="team-image" src="" alt="Batting Team">
+    <div class="container">
+        <h1>T20 Score Predictor</h1>
+        <form method="POST">
+            <label for="batting_team">Batting Team</label>
+            <select name="batting_team" required>
+                {% for team in teams %}
+                    <option value="{{ team }}">{{ team }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="bowling_team">Bowling Team</label>
+            <select name="bowling_team" required>
+                {% for team in teams %}
+                    <option value="{{ team }}">{{ team }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="city">City</label>
+            <select name="city" required>
+                {% for city in cities %}
+                    <option value="{{ city }}">{{ city }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="current_score">Current Score</label>
+            <input type="number" name="current_score" required>
+
+            <label for="overs">Overs Completed</label>
+            <input type="number" step="0.1" name="overs" required>
+
+            <label for="wickets">Wickets Fallen</label>
+            <input type="number" name="wickets" required>
+
+            <label for="last_five">Runs in Last 5 Overs</label>
+            <input type="number" name="last_five" required>
+
+            <button type="submit">Predict Score</button>
+        </form>
+
+        {% if prediction %}
+            <div class="prediction">
+                <p>Predicted Final Score: <strong>{{ prediction }}</strong></p>
             </div>
-
-            <div class="col-md-8">
-                <h1>Cricket Score Predictor</h1>
-                <form method="POST">
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="batting_team">Select batting team</label>
-                            <select class="form-control" name="batting_team" id="batting_team" required>
-                                <option value="">Select Team</option>
-                                {% for team in teams %}
-                                <option value="{{ team }}">{{ team }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="bowling_team">Select bowling team</label>
-                            <select class="form-control" name="bowling_team" id="bowling_team" required>
-                                <option value="">Select Team</option>
-                                {% for team in teams %}
-                                <option value="{{ team }}">{{ team }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="city">Select city</label>
-                            <select class="form-control" name="city" id="city" required>
-                                {% for city in cities %}
-                                <option value="{{ city }}">{{ city }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="current_score">Current Score</label>
-                            <input type="number" class="form-control" name="current_score" id="current_score" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label for="overs">Overs Done</label>
-                            <input type="number" step="0.1" class="form-control" name="overs" id="overs" required>
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="wickets">Wickets Out</label>
-                            <input type="number" class="form-control" name="wickets" id="wickets" required>
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="last_five">Runs scored in last 5 overs</label>
-                            <input type="number" class="form-control" name="last_five" id="last_five" required>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-block">Predict Score</button>
-                </form>
-
-                {% if prediction %}
-                <div class="alert alert-info mt-4 text-center" role="alert">
-                    <h2>Predicted Score: {{ prediction }}</h2>
-                </div>
-                {% endif %}
-            </div>
-
-            <!-- Bowling Team Image -->
-            <div class="col-md-2 d-flex align-items-center justify-content-center">
-                <img id="bowling_team_image" class="team-image" src="" alt="Bowling Team">
-            </div>
-        </div>
+        {% endif %}
     </div>
-
-    <script>
-        function updateTeamImage(team, elementId) {
-            const imgElement = document.getElementById(elementId);
-            if (team) {
-                imgElement.src = `/static/images/${team.toLowerCase().replace(' ', '_')}.png`;
-                imgElement.alt = team;
-            } else {
-                imgElement.src = '';
-                imgElement.alt = '';
-            }
-        }
-
-        $(document).ready(function() {
-            // Update images on team selection change
-            $('#batting_team').change(function() {
-                updateTeamImage(this.value, 'batting_team_image');
-            });
-            $('#bowling_team').change(function() {
-                updateTeamImage(this.value, 'bowling_team_image');
-            });
-        });
-    </script>
 </body>
 </html>
